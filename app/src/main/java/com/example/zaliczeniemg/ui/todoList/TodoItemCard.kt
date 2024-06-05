@@ -4,11 +4,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,24 +24,43 @@ import java.sql.Date
 fun TodoItemCard(todoItem: TodoItem, onTodoClicked: () -> Unit) {
     val viewModel: TodoViewModel = viewModel()
     val coroutineScope = rememberCoroutineScope()
-    // val refreshFlag by viewModel.refreshFlag.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.combinedClickable(
-            onClick = {},
-            onLongClick = { onTodoClicked() },
-            interactionSource = remember {
-                MutableInteractionSource()
-            },
-            indication = rememberRipple(bounded = true),
-        ).fillMaxWidth().padding(8.dp), elevation = CardDefaults.cardElevation(
+        modifier = Modifier
+            .combinedClickable(
+                onClick = {},
+                onLongClick = { onTodoClicked() },
+                interactionSource = remember {
+                    MutableInteractionSource()
+                },
+                indication = rememberRipple(bounded = true),
+            )
+            .fillMaxWidth()
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(
             defaultElevation = 10.dp
         )
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = todoItem.title, style = MaterialTheme.typography.headlineSmall)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = todoItem.title,
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Todo"
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = todoItem.content, style = MaterialTheme.typography.bodyLarge)
             Spacer(modifier = Modifier.height(8.dp))
@@ -50,7 +69,10 @@ fun TodoItemCard(todoItem: TodoItem, onTodoClicked: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "Created by ${todoItem.author}", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    text = "Created by ${todoItem.author}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
                 Switch(checked = todoItem.completed, onCheckedChange = {
                     coroutineScope.launch {
                         val request = TodoItemPatchRequest(completed = !todoItem.completed)
@@ -60,7 +82,35 @@ fun TodoItemCard(todoItem: TodoItem, onTodoClicked: () -> Unit) {
             }
         }
     }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Delete Todo") },
+            text = { Text("Are you sure you want to delete this todo item?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.deleteTodo(todoItem.id)
+                            showDialog = false
+                        }
+
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDialog = false }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable

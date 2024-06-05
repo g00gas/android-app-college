@@ -41,4 +41,15 @@ class TodoViewModel(private val repository: TodoRepository) : ViewModel() {
             }
         }
     }
+
+    fun deleteTodo(id: Long) {
+        viewModelScope.launch {
+            try {
+                repository.deleteTodo(id)
+                _refreshFlag.value = !_refreshFlag.value
+            } catch (e: Exception) {
+                println("Error deleting todo: ${e.localizedMessage}")
+            }
+        }
+    }
 }

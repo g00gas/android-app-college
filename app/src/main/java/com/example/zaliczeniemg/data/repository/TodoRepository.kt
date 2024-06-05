@@ -3,6 +3,7 @@ package com.example.zaliczeniemg.data.repository
 import com.example.zaliczeniemg.data.api.RetrofitClient
 import com.example.zaliczeniemg.data.model.TodoItem
 import com.example.zaliczeniemg.data.model.TodoItemPatchRequest
+import retrofit2.Response
 
 class TodoRepository {
     private val api = RetrofitClient.api
@@ -15,5 +16,5 @@ class TodoRepository {
 
     suspend fun deleteTodo(
         id: Long
-    ): Void = api.deleteTodo(id)
+    ): Response<Unit> = api.deleteTodo(id)
 }

@@ -2,6 +2,7 @@ package com.example.zaliczeniemg.data.api
 
 import com.example.zaliczeniemg.data.model.TodoItem
 import com.example.zaliczeniemg.data.model.TodoItemPatchRequest
+import retrofit2.Response
 import retrofit2.http.*
 
 
@@ -24,5 +25,5 @@ interface TodoApi {
     @DELETE("todo/{id}")
     suspend fun deleteTodo(
         @Path("id") id: Long
-    ): Void
+    ): Response<Unit>
 }

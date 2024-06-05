@@ -12,7 +12,7 @@ fun SetUsernameDialog(onUsernameSet: (String) -> Unit) {
     var username by remember { mutableStateOf("") }
 
     AlertDialog(
-        onDismissRequest = { /* Handle dialog closing */ },
+        onDismissRequest = {},
         title = { Text("Set Username") },
         text = {
             Column {

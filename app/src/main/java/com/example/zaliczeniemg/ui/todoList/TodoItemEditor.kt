@@ -25,7 +25,6 @@ fun TodoItemEditor(todoItem: TodoItem?, onDismiss: () -> Unit, isNew: Boolean) {
     var content by remember { mutableStateOf(if (isNew) "" else todoItem?.content ?: "") }
     var author by remember { mutableStateOf(todoItem?.author ?: sharedPreferences.getString("username", "")) }
     val viewModel: TodoViewModel = viewModel()
-    val coroutineScope = rememberCoroutineScope()
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -93,7 +92,7 @@ fun TodoItemEditor(todoItem: TodoItem?, onDismiss: () -> Unit, isNew: Boolean) {
                                 val request = TodoItemPatchRequest(
                                     title = title,
                                     content = content,
-                                    creationDate = currentDate,
+                                    creationDate = TodoItemPatchRequest.fromDate(currentDate),
                                     author = author,
                                     completed = false
                                 )
@@ -104,7 +103,7 @@ fun TodoItemEditor(todoItem: TodoItem?, onDismiss: () -> Unit, isNew: Boolean) {
                                     TodoItemPatchRequest(title = title, content = content, author = author)
                                 viewModel.updateTodo(todoItem!!.id, request)
                             }
-                            
+
                             onDismiss()
                         },
                         modifier = Modifier.weight(1f)
